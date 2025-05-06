@@ -22,7 +22,7 @@ interface Props {
 }
 
 interface State {
-  results: { severity: string; message: string; focusNode: string }[];
+  results: { severity: string; message: { [ lang: string ]: string}; focusNode: string }[];
   conforms: boolean;
   loading: boolean;
   error: boolean;
@@ -205,12 +205,7 @@ export default class ValidationPanel extends React.Component<Props, State> {
                       />
                     )}
                     <td>
-                      {result.message.includes("@")
-                        ? result.message.substring(
-                            0,
-                            result.message.lastIndexOf("@")
-                          )
-                        : result.message}
+                      {result.message[AppSettings.interfaceLanguage] || result.message}
                     </td>
                   </tr>
                 ))}
