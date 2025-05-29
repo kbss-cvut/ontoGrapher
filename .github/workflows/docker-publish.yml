@@ -2,14 +2,13 @@ name: Publish Docker Image
 
 on:
   push:
-    # Publish `master` as Docker `latest` image.
+    # Publish `main` as Docker `latest` image.
     branches:
       - main
   workflow_dispatch:
 
 env:
   IMAGE_NAME: ontographer
-  AL_DEV_URL: ${{ vars.AL_DEV_URL }}    # e.g. https://xn--slovnk-test-scb.dia.gov.cz/modelujeme
 
 jobs:
 
@@ -18,8 +17,6 @@ jobs:
   push:
 
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
     steps:
       - uses: actions/checkout@v4
 
