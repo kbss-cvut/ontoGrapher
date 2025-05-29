@@ -5,6 +5,7 @@ on:
     # Publish `main` as Docker `latest` image.
     branches:
       - main
+  pull_request:
   workflow_dispatch:
 
 env:
