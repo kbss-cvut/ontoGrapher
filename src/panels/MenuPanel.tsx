@@ -13,7 +13,7 @@ import MenuPanelValidate from "./menu/left/MenuPanelValidate";
 import MenuPanelAbout from "./menu/right/MenuPanelAbout";
 import { MenuPanelAvatar } from "./menu/right/MenuPanelAvatar";
 import MenuPanelHelp from "./menu/right/MenuPanelHelp";
-import MenuPanelReport from "./menu/right/MenuPanelReport";
+import MenuPanelLinks from "./menu/right/MenuPanelLinks";
 import FitContentWidget from "./menu/widget/FitContentWidget";
 import ViewWidget from "./menu/widget/ViewWidget";
 import ZoomWidget from "./menu/widget/ZoomWidget";
@@ -86,7 +86,7 @@ export default class MenuPanel extends React.Component<
               />
             </Col>
             <Col className={"right" + (this.props.freeze ? " nointeract" : "")}>
-              <MenuPanelReport />
+              <MenuPanelLinks />
               {Environment.auth && <MenuPanelAvatar />}
             </Col>
           </Row>

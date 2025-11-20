@@ -18,7 +18,6 @@ import {
   getElementVocabulary,
   getIntrinsicTropeTypeIDs,
   getLabelOrBlank,
-  getVocabElementByElementID,
   getVocabularyLabel,
 } from "../../../function/FunctionGetVars";
 import { deleteLink } from "../../../function/FunctionLink";

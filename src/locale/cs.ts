@@ -205,8 +205,10 @@ export const cs: { [Property in keyof typeof en]: string } = {
   selectVocabulary: "Pojem se vytvoří ve slovníku:",
   view: "Vzhled",
   switchColors: "Barvy slovníků",
+  externalLinks: "Odkazy",
   reportIssue: "Nahlásit chybu",
   reportEnhancement: "Navrhnout úpravu",
+  toTermIt: "Otevřít TermIt",
   changelogButton: "Změny",
   errorInvalidCardinality: "Nastavená kardinalita není validní",
   errorParsingEnvironmentVariable:

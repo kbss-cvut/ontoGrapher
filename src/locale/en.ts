@@ -208,8 +208,10 @@ export const en = {
   otherVocabularies: "Other vocabularies",
   view: "View",
   switchColors: "Vocabulary color scheme",
+  externalLinks: "Links",
   reportIssue: "Report an issue",
   reportEnhancement: "Suggest an improvement",
+  toTermIt: "Open TermIt",
   changelogButton: "Changelog",
   errorInvalidCardinality: "Set cardinality is invalid",
   errorParsingEnvironmentVariable:
