@@ -85,7 +85,7 @@ export async function updateContexts(): Promise<boolean> {
 }
 
 //TODO: hot
-export async function retrieveVocabularyData(): Promise<boolean> {
+export async function retrieveVocabularyData(contextIris: string[] = AppSettings.contextIRIs): Promise<boolean> {
   await fetchVocabularies(
     AppSettings.contextEndpoint,
     AppSettings.cacheContext
@@ -108,7 +108,7 @@ export async function retrieveVocabularyData(): Promise<boolean> {
     "?vocabIRI a-popis-dat-pojem:má-glosář ?scheme.",
     "?vocabIRI dcterms:title ?vocabLabel .",
     "}",
-    `values ?contextIRI {<${AppSettings.contextIRIs.join("> <")}>}`,
+    `values ?contextIRI {<${contextIris.join("> <")}>}`,
     "}",
   ].join(`
   `);

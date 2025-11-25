@@ -4,13 +4,14 @@ import {
   AppSettings,
   Diagrams,
   WorkspaceElements,
-  WorkspaceVocabularies,
+  WorkspaceLinks,
+  WorkspaceVocabularies
 } from "../../config/Variables";
 import { Cardinality } from "../../datatypes/Cardinality";
 import { addDiagram } from "../../function/FunctionCreateVars";
 import { initLanguageObject } from "../../function/FunctionEditVars";
 import { processQuery } from "../../interface/TransactionInterface";
-import { WorkspaceLinks } from "../../config/Variables";
+import { retrieveVocabularyData } from "../../interface/ContextInterface";
 
 export async function getElementsConfig(
   contextEndpoint: string = AppSettings.contextEndpoint,
@@ -88,7 +89,7 @@ export async function getElementsConfig(
       "?diagram og:representation ?representation .",
       "}",
       `values ?graph {<${diagramGraphs.join("> <")}>}`,
-      "}",
+      "}"
     ].join(`
     `);
     return await processQuery(contextEndpoint, query)
@@ -101,11 +102,11 @@ export async function getElementsConfig(
           if (!(iri in elementPositions))
             elementPositions[iri] = {
               hidden: {},
-              position: {},
+              position: {}
             };
           elementPositions[iri].position![result.diagramID.value] = {
             x: parseInt(result.posX.value),
-            y: parseInt(result.posY.value),
+            y: parseInt(result.posY.value)
           };
           elementPositions[iri].hidden![result.diagramID.value] =
             result.hidden.value === "true";
@@ -133,9 +134,10 @@ export async function getElementsConfig(
 }
 
 export async function getSettings(contextEndpoint: string): Promise<boolean> {
+  const diagramVocabularyContexts: { [key: string]: string } = {};
   const query = [
     "PREFIX og: <http://onto.fel.cvut.cz/ontologies/application/ontoGrapher/>",
-    "select distinct ?open ?vocabContext ?graph ?diagram ?index ?scale ?posX ?posY ?name ?id ?representation ?vocabulary ?description ?collaborator ?creationDate ?modifyDate where {",
+    "select distinct ?open ?vocabContext ?graph ?diagram ?index ?scale ?posX ?posY ?name ?id ?representation ?vocabulary ?vocabularyContext ?description ?collaborator ?creationDate ?modifyDate where {",
     "?vocabContext <https://slovník.gov.cz/datový/pracovní-prostor/pojem/odkazuje-na-přílohový-kontext> ?graph .",
     "graph ?graph {",
     " ?diagram og:index ?index .",
@@ -152,10 +154,11 @@ export async function getSettings(contextEndpoint: string): Promise<boolean> {
     "           ?diagram og:collaborator ?collaborator. ",
     "           ?diagram og:creationDate ?creationDate. ",
     "           ?diagram og:modifiedDate ?modifyDate. ",
+    "optional { GRAPH ?vocabularyContext { ?vocabulary a [] . } }",
     " }",
     "}",
     `values ?vocabContext {<${AppSettings.contextIRIs.join("> <")}>}`,
-    "} order by asc(?index)",
+    "} order by asc(?index)"
   ].join(`
   `);
   return await processQuery(contextEndpoint, query)
@@ -197,7 +200,7 @@ export async function getSettings(contextEndpoint: string): Promise<boolean> {
         if (result.posX && result.posY && result.scale) {
           Diagrams[result.id.value].origin = {
             x: parseInt(result.posX.value, 10),
-            y: parseInt(result.posY.value, 10),
+            y: parseInt(result.posY.value, 10)
           };
           Diagrams[result.id.value].scale = parseFloat(result.scale.value);
         }
@@ -207,13 +210,16 @@ export async function getSettings(contextEndpoint: string): Promise<boolean> {
         if (result.vocabulary) {
           Diagrams[result.id.value].vocabularies = _.uniq([
             ...Diagrams[result.id.value].vocabularies,
-            result.vocabulary.value,
+            result.vocabulary.value
           ]);
+          if (result.vocabularyContext) {
+            diagramVocabularyContexts[result.vocabulary.value] = result.vocabularyContext.value;
+          }
         }
         if (result.collaborator) {
           Diagrams[result.id.value].collaborators = _.uniq([
             ...Diagrams[result.id.value].collaborators,
-            result.collaborator.value,
+            result.collaborator.value
           ]);
         }
         if (result.creationDate) {
@@ -235,11 +241,25 @@ export async function getSettings(contextEndpoint: string): Promise<boolean> {
           ).filter((v) => !WorkspaceVocabularies[v].readOnly);
       });
       return true;
+    }).then(async result => {
+      await fetchMissingVocabularies(diagramVocabularyContexts);
+      return result;
     })
     .catch((e) => {
       console.error(e);
       return false;
     });
+}
+
+/**
+ * Fetches vocabularies that are referenced in the diagrams but are not present in the current workspace.
+ *
+ * @param availableVocabularyContexts Map of vocabulary -> context for all vocabularies referenced by diagrams
+ */
+async function fetchMissingVocabularies(availableVocabularyContexts: { [key: string]: string }) {
+  const vocabulariesToFetch: string[] = Object.values(Diagrams).flatMap(d => d.vocabularies).filter(v => WorkspaceVocabularies[v] === undefined);
+  const contextsToFetch = vocabulariesToFetch.map(v => availableVocabularyContexts[v]).filter(v => v !== undefined);
+  await retrieveVocabularyData(contextsToFetch);
 }
 
 export async function getLinksConfig(
@@ -268,7 +288,7 @@ export async function getLinksConfig(
       "?link og:targetCardinality2 ?targetCard2 .",
       "}",
       `values ?graph {<${diagramGraphs.join("> <")}>}`,
-      "}",
+      "}"
     ].join(`
       `);
     return await processQuery(contextEndpoint, query)
@@ -304,7 +324,7 @@ export async function getLinksConfig(
                   : LinkType.GENERALIZATION,
               linkIRI: result.link.value,
               sourceCardinality: sourceCard,
-              targetCardinality: targetCard,
+              targetCardinality: targetCard
             };
           }
         }
@@ -330,7 +350,7 @@ export async function getLinksConfig(
       "?diagram og:representation ?representation.",
       "}",
       `values ?graph {<${diagramGraphs.join("> <")}>}`,
-      "}",
+      "}"
     ].join(`
       `);
     return await processQuery(contextEndpoint, query)
@@ -346,9 +366,9 @@ export async function getLinksConfig(
             linkVertices[id].vertices![result.diagramID.value] = [];
           linkVertices[id].vertices![result.diagramID.value][
             parseInt(result.index.value)
-          ] = {
+            ] = {
             x: parseInt(result.posX.value),
-            y: parseInt(result.posY.value),
+            y: parseInt(result.posY.value)
           };
         }
         return true;

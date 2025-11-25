@@ -3,7 +3,7 @@ import _ from "lodash";
 import { AppSettings, Diagrams } from "../../config/Variables";
 import { parsePrefix } from "../../function/FunctionEditVars";
 import { qb } from "../QueryBuilder";
-import { WorkspaceVocabularies } from "./../../config/Variables";
+import { WorkspaceVocabularies } from "../../config/Variables";
 
 function getDiagramTriples(diagram: string): string {
   const diagramIRI = qb.i(Diagrams[diagram].iri);
@@ -79,6 +79,7 @@ export function updateDiagramAssignments(diagram: string): string {
   );
 
   const insertVocabularyContext = Diagrams[diagram].vocabularies
+    .filter(v => WorkspaceVocabularies[v] !== undefined)
     .map((v) => WorkspaceVocabularies[v].graph)
     .map((contextIRI) =>
       INSERT.DATA`${qb.g(contextIRI, [
