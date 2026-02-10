@@ -83,7 +83,7 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^8.30.0",
+    "eslint": "^9.26.0",
     "eslint-config-react-app": "^7.0.1",
     "prettier": "^2.3.0",
     "react-error-overlay": "6.0.9"
